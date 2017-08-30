@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Poopers &#x1F4A9;</title>
+    <script src="jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="poopers.css">
+</head>
+
+<body>
+    <div class="cols">
+        <div id="poopen1" class="poopen"></div>
+        	<div style="height: 600px">
+	        	<div style="margin-left: 15px">
+	        		<p><img id="poopcount" src="tinypoop.png"> Collected:</p>
+			        <p id="counter">10</p>
+			        <p>Click on a pooper<br>to make it poop</p>
+		        </div>
+		        <div id="pooplist" class="pooplist">
+		            <div class="icon">
+			            <img id="baseturd" src="cutepoop.png">
+			            <p>Cost: 10</p>
+		            </div>
+		            <div class="icon">
+			            <img id="fastturd" src="cutepoopfast.png">
+			            <p>Cost: 30</p>
+		            </div>
+		            <div class="icon">
+		            	<img id="goldturd" src="cutepoopgold.png">
+		            	<p>Cost: 250</p>
+	            	</div>
+	            	<div class="icon">
+	            		<img id="platinumturd" src="cutepoopplatinum.png">
+	            		<p>Cost: 1000</p>
+	            	</div>
+		            <div class="icon">
+			            <img id="paper" src="smallpaper.png">
+			            <p id="tptext">Cost: 15</p>
+		            </div>
+		            <div class="icon">
+			            <img id="bpaper" src="smallbronzepaper.png">
+			            <p id="tpbtext">Cost: 300</p>
+		            </div>
+		        </div>
+	        </div>
+    </div>
+    <div>
+        <p>Many thanks to Quantum for helping set up this masterpiece.</p> 
+        <p style="font-size:6px">Created by Cthulhu</p>
+    </div>
+    <script>
+        $(function() {
+        	var poopets = [];
+        	var fpoopets = [];
+		    var startimg = $('#baseturd');
+		    var fastimg = $('#fastturd');
+		    var goldimg = $('#goldturd');
+		    var platinumimg = $('#platinumturd');
+		    var paperimg = $('#paper');
+		    var bronzetpimg = $('#bpaper');
+		    var div = $('#poopen1');
+		    var w = 507;
+		    var normalpoops = 0;
+		    var tptimer = [-1,-1];
+		    var fastpoops = 0;
+		    var counter = $("#counter");
+		    var h = 524;
+		    var nextpoop = 10;
+		    paperimg.click(function() {
+		        usepaper(15, 1, ".poop", "paper.png", 0, 30, "#tptext", "Cost: 15");
+		    });
+		    function tpfunction(index, name, finaltext) {
+		    	if (tptimer[index] == 0) {
+	        		$(name).text(finaltext);
+	        		tptimer[index] -= 1;
+	        	}
+	        	else{
+	        		$(name).text(tptimer[index]);
+	        		tptimer[index] -= 1;
+	        		setTimeout(function() {
+	        			tpfunction(index, name, finaltext);
+	        		}, 1000);
+	        	}
+	    	}
+		    bronzetpimg.click(function() {
+		    	usepaper(300, 10, ".bronzepoop", "bronzepaper.png", 1, 100, "#tpbtext", "Cost: 300");
+		    })
+		    function usepaper(price, val, tclass, source, index, time, name, finaltext) {
+		    	if (nextpoop < price || tptimer[index]>=0) {
+		            return;
+		        }
+		        tptimer[index] = time;
+		        setTimeout(function() {
+		        	tpfunction(index, name, finaltext);
+		        }, 1000);
+		        nextpoop -= price;
+		        counter.text(nextpoop);
+		        var v = $("<img>", {
+		            src: source,
+		            class: "tpaper"
+		        }).appendTo(div);
+		        v.animate({
+		            left: "+=150",
+		            top: "+=150"
+		        }, 1000, "linear", function() {
+		            $(this).remove();
+		            div.children(tclass).each(function() {
+		                $(this).remove();
+	                    nextpoop += val;
+		            });
+		            counter.text(nextpoop);
+		        });
+		    }
+		    startimg.click(function() {
+		        poopets.push(addpoop(10, 1, "cutepoop.png", "normalpoopet", "tinypoop.png", 1, "poop"));
+		        normalpoops += 1;
+		        if (normalpoops >= 20) {
+		        	normalpoops -= 20;
+		        	cleartop(poopets);
+		        	addpoop(0, 1, "cutepoopbronze.png", "poopet", "tinypoopbronze.png", 20, "bronzepoop");
+		        }
+		    });
+		    fastimg.click(function() {
+		        fpoopets.push(addpoop(30, 2, "cutepoopfast.png", "poopet", "tinypoop.png", 1, "poop"));
+		        fastpoops += 1;
+		        if (fastpoops >= 20) {
+		        	fastpoops -= 20;
+		        	cleartop(fpoopets);
+		        	addpoop(0, 2, "cutepoopsilver.png", "poopet", "tinypoopsilver.png", 20, "bronzepoop");
+		        }
+		    });
+		    goldimg.click(function() {
+		    	addpoop(250, 1, "cutepoopgold.png", "poopet", "tinypoopgold.png", 25, "bronzepoop");
+		    });
+		    platinumimg.click(function() {
+		    	addpoop(1000, 3, "cutepoopplatinum.png", "poopet", "tinypoopplatinum.png", 25, "bronzepoop");
+		    });
+		    function cleartop(poops){
+		    	for(var i = 0; i < 20; i++) {
+	        		var tmp = poops.pop();
+	        		tmp[0].remove();
+	        		clearInterval(tmp[1]);
+	        	}
+		    }
+		    function addpoop(cost, speed, imgsource, classname, dropping, drval, drpclassname) {
+		        if (nextpoop < cost) {
+		            return;
+		        }
+		        nextpoop -= cost;
+		        counter.text(nextpoop);
+		        var v = {
+		            img: $("<img>", {
+		                src: imgsource,
+		                class: classname
+		            }).appendTo(div),
+		            val: drval,
+		            drpimg: dropping,
+		            drpclass: drpclassname,
+		            currx: Math.random() * w + 5,
+		            curry: Math.random() * h + 5,
+		            finalx: 10,
+		            finaly: 10,
+		            incx: 1,
+		            incy: 1,
+		            speed: speed
+		        };
+		        v.img.animate({
+		        	left: v.currx,
+		        	top: v.curry
+		        }, 1000, "linear");
+		        return [v.img, setInterval(function() {
+		            movepoop(v);
+		        }, 1000)];
+		    }
+
+		    function movepoop(v) {
+	            $("<img>", {
+	                src: v.drpimg,
+	                class: v.drpclass
+	            }).css({
+	                top: v.curry + 18,
+	                left: v.currx + 21
+	            }).click(function() {
+	                $(this).remove();
+	                nextpoop += v.val;
+	                counter.text(nextpoop);
+	            }).appendTo(div);
+	            v.currx = Math.random() * w + 5;
+	            v.curry = Math.random() * h + 5;
+	            v.img.css({
+		            top: v.curry,
+		            left: v.currx
+		        });
+		    }
+		});
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Poopers &#x1F4A9;</title>
+    <script src="jquery-3.2.1.min.js"></script>
+    <script src="https://raw.githubusercontent.com/benbarnett/jQuery-Animate-Enhanced/master/jquery.animate-enhanced.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="poopers.css">
+</head>
+
+<body>
+    <div class="cols">
+        <div id="poopen1" class="poopen"></div>
+        <div id="pooplist">
+            <p><img id="poopcount" src="tinypoop.png"> Collected:</p>
+            <p id="counter">10</p>
+            <p>Click on a pooper<br>to make it poop</p>
+            <img id="baseturd" src="cutepoop.png">
+            <p>Cost: 10</p>
+            <img id="fastturd" src="cutepoopfast.png">
+            <p>Cost: 30</p>
+            <img id="paper" src="smallpaper.png">
+            <p>Cost: 15</p>
+        </div>
+    </div>
+    <div>
+        <p>Many thanks to Quantum for helping set up this masterpiece.</p> 
+        <p style="font-size:6px">Created by Cthulhu</p>
+    </div>
+    <script>
+        $(function() {
+		    var startimg = $('#baseturd');
+		    var baseturds = 0;
+		    var fastimg = $('#fastturd');
+		    var paperimg = $('#paper');
+		    var div = $('#poopen1');
+		    var w = 507;
+		    var counter = $("#counter");
+		    var h = 524;
+		    var nextpoop = 10;
+		    paperimg.click(function() {
+		        if (nextpoop < 15) {
+		            return;
+		        }
+		        nextpoop -= 15;
+		        counter.text(nextpoop);
+		        var v = $("<img>", {
+		            src: "paper.png",
+		            class: "tpaper"
+		        }).appendTo(div);
+		        v.animate({
+		            left: "+=150",
+		            top: "+=150"
+		        }, 2000, "linear", function() {
+		            $(this).remove();
+		            div.children('.poop').each(function() {
+		                $(this).remove();
+	                    nextpoop += 1;
+		            });
+		            counter.text(nextpoop);
+		        });
+
+		    });
+		    startimg.click(function() {
+		        addpoop(10, 1, "cutepoop.png");
+		    });
+		    fastimg.click(function() {
+		        addpoop(30, 2, "cutepoopfast.png");
+		    });
+
+		    function addpoop(cost, speed, imgsource) {
+		        if (nextpoop < cost) {
+		            return;
+		        }
+		        nextpoop -= cost;
+		        counter.text(nextpoop);
+		        var v = {
+		            img: $("<img>", {
+		                src: imgsource,
+		                class: "poopet"
+		            }).appendTo(div),
+		            speed: speed,
+		            finalx: 10,
+		            finaly: 10
+		        };
+		        movepoop(v);
+		    }
+
+		    function movepoop(v) {
+	            v.currx = v.finalx;
+	            v.curry = v.finaly;
+	            v.finalx = Math.random() * w + 5;
+	            v.finaly = Math.random() * h + 5;
+	            dist = Math.sqrt(Math.pow(v.finalx - v.currx, 2) + Math.pow(v.finaly - v.curry, 2)) / (v.speed * 4);
+	            v.img.animate({
+	            	left: v.finalx,
+	            	top: v.finaly
+	            }, 1000/v.speed, "linear", function() {
+	            	movepoop(v);
+	            });
+	            $("<img>", {
+	                src: "tinypoop.png",
+	                class: "poop"
+	            }).css({
+	                top: v.curry + 18,
+	                left: v.currx + 21
+	            }).hover(function() {
+	                $(this).remove();
+	                nextpoop += 1;
+	                counter.text(nextpoop);
+	            }).appendTo(div);
+		    }
+		});
+    </script>
+</body>
+
+</html>
