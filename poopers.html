@@ -13,34 +13,33 @@
         <div id="poopen1" class="poopen"></div>
         	<div style="height: 600px">
 	        	<div style="margin-left: 15px">
-	        		<p><img id="poopcount" src="tinypoop.png"> Collected:</p>
-			        <p id="counter">10</p>
-			        <p>Click on a pooper<br>to make it poop</p>
+	        		<p><img id="poopcount" src="tinypoop.png"> Collected: <a id="counter">10</a></p>
+			        <p>Click on a pooper to make it poop</p>
 		        </div>
 		        <div id="pooplist" class="pooplist">
 		            <div class="icon">
 			            <img id="baseturd" src="cutepoop.png">
-			            <p>Cost: 10</p>
+			            <p>Cost: <a id="basecounter">10</a></p>
 		            </div>
 		            <div class="icon">
 			            <img id="fastturd" src="cutepoopfast.png">
-			            <p>Cost: 30</p>
+			            <p>Cost: <a id="fastcounter">30</a></p>
 		            </div>
 		            <div class="icon">
 		            	<img id="goldturd" src="cutepoopgold.png">
-		            	<p>Cost: 250</p>
+		            	<p>Cost: <a id="goldcounter">250</a></p>
 	            	</div>
 	            	<div class="icon">
 	            		<img id="platinumturd" src="cutepoopplatinum.png">
-	            		<p>Cost: 1000</p>
+	            		<p>Cost: <a id="platinumcounter">1000</a></p>
 	            	</div>
 		            <div class="icon">
 			            <img id="paper" src="smallpaper.png">
-			            <p id="tptext">Cost: 15</p>
+			            <p>Cost: <a id="papercounter">15</a></p>
 		            </div>
 		            <div class="icon">
 			            <img id="bpaper" src="smallbronzepaper.png">
-			            <p id="tpbtext">Cost: 300</p>
+			            <p>Cost: <a id="bronzepapercounter">300</a></p>
 		            </div>
 		        </div>
 	        </div>
@@ -53,51 +52,63 @@
         $(function() {
         	var poopets = [];
         	var fpoopets = [];
-		    var startimg = $('#baseturd');
-		    var fastimg = $('#fastturd');
-		    var goldimg = $('#goldturd');
-		    var platinumimg = $('#platinumturd');
-		    var paperimg = $('#paper');
-		    var bronzetpimg = $('#bpaper');
 		    var div = $('#poopen1');
 		    var w = 507;
 		    var normalpoops = 0;
-		    var tptimer = [-1,-1];
 		    var fastpoops = 0;
 		    var counter = $("#counter");
 		    var h = 524;
 		    var nextpoop = 10;
-		    paperimg.click(function() {
-		        usepaper(15, 1, ".poop", "paper.png", 0, 30, "#tptext", "Cost: 15");
-		    });
-		    function tpfunction(index, name, finaltext) {
-		    	if (tptimer[index] == 0) {
-	        		$(name).text(finaltext);
-	        		tptimer[index] -= 1;
-	        	}
-	        	else{
-	        		$(name).text(tptimer[index]);
-	        		tptimer[index] -= 1;
-	        		setTimeout(function() {
-	        			tpfunction(index, name, finaltext);
-	        		}, 1000);
-	        	}
-	    	}
-		    bronzetpimg.click(function() {
-		    	usepaper(300, 10, ".bronzepoop", "bronzepaper.png", 1, 100, "#tpbtext", "Cost: 300");
-		    })
-		    function usepaper(price, val, tclass, source, index, time, name, finaltext) {
-		    	if (nextpoop < price || tptimer[index]>=0) {
+		    function Icon(id, cost, img, text) {
+		    	this.id = $(id);
+		    	this.cost = cost;
+		    	this.img = img;
+		    	this.label = $(text);
+		    }
+        	Icon.prototype.buy = function() {
+		    	this.cost = this.cost*1.2;
+		    	this.label.text(Math.round(this.cost));
+		    }
+		    function Paper(id, cost, img, text, val, classname) {
+		    	Icon.call(this, id, cost, img, text);
+		    	this.val = val;
+		    	this.classname = classname;
+		    	var that = this;
+		    	this.id.click(function () {
+		    		usepaper(that);
+		    	});
+		    }
+		    Paper.prototype = Object.create(Icon.prototype); 
+		    function Dropping(sourceimg, value, classname) {
+        		this.img = sourceimg;
+        		this.value = value;
+        		this.classname = classname;
+        	}
+        	function Baseturd(id, cost, img, text, speed, drpimg, drpcost, drpclass) {
+        		Icon.call(this, id, cost, img, text);
+        		var that = this;
+        		this.id.click(function () {
+        			addpoop(that);
+        		});
+        		this.speed = speed;
+        		this.dropping = new Dropping(drpimg, drpcost, drpclass);
+        	}
+        	Baseturd.prototype = Object.create(Icon.prototype);
+        	var startimg = new Baseturd("#baseturd", 10, "cutepoop.png", "#basecounter", 1, "tinypoop.png", 1, "poop");
+        	var fastimg = new Baseturd("#fastturd", 30, "cutepoopfast.png", "#fastcounter", 2, "tinypoop.png", 1, "poop");
+        	var goldimg = new Baseturd("#goldturd", 250, "cutepoopgold.png", "#goldcounter", 1, "tinypoopgold.png", 25, "bronzepoop");
+        	var platinumimg = new Baseturd("#platinumturd", 1000, "cutepoopplatinum.png", "#platinumcounter", 3, "tinypoopplatinum.png", 25, "bronzepoop");
+        	var paperimg = new Paper("#paper", 15, "paper.png", "#papercounter", 1, ".poop");
+        	var bronzetpimg = new Paper("#bpaper", 300, "bronzepaper.png", "#bronzepapercounter", 25, ".bronzepoop");
+		    function usepaper(paper) {
+		    	if (nextpoop < Math.round(paper.cost)) {
 		            return;
 		        }
-		        tptimer[index] = time;
-		        setTimeout(function() {
-		        	tpfunction(index, name, finaltext);
-		        }, 1000);
-		        nextpoop -= price;
+		        nextpoop -= Math.round(paper.cost);
 		        counter.text(nextpoop);
+		        paper.buy();
 		        var v = $("<img>", {
-		            src: source,
+		            src: paper.img,
 		            class: "tpaper"
 		        }).appendTo(div);
 		        v.animate({
@@ -105,37 +116,13 @@
 		            top: "+=150"
 		        }, 1000, "linear", function() {
 		            $(this).remove();
-		            div.children(tclass).each(function() {
+		            div.children(paper.classname).each(function() {
 		                $(this).remove();
-	                    nextpoop += val;
+	                    nextpoop += paper.val;
 		            });
 		            counter.text(nextpoop);
 		        });
 		    }
-		    startimg.click(function() {
-		        poopets.push(addpoop(10, 1, "cutepoop.png", "normalpoopet", "tinypoop.png", 1, "poop"));
-		        normalpoops += 1;
-		        if (normalpoops >= 20) {
-		        	normalpoops -= 20;
-		        	cleartop(poopets);
-		        	addpoop(0, 1, "cutepoopbronze.png", "poopet", "tinypoopbronze.png", 20, "bronzepoop");
-		        }
-		    });
-		    fastimg.click(function() {
-		        fpoopets.push(addpoop(30, 2, "cutepoopfast.png", "poopet", "tinypoop.png", 1, "poop"));
-		        fastpoops += 1;
-		        if (fastpoops >= 20) {
-		        	fastpoops -= 20;
-		        	cleartop(fpoopets);
-		        	addpoop(0, 2, "cutepoopsilver.png", "poopet", "tinypoopsilver.png", 20, "bronzepoop");
-		        }
-		    });
-		    goldimg.click(function() {
-		    	addpoop(250, 1, "cutepoopgold.png", "poopet", "tinypoopgold.png", 25, "bronzepoop");
-		    });
-		    platinumimg.click(function() {
-		    	addpoop(1000, 3, "cutepoopplatinum.png", "poopet", "tinypoopplatinum.png", 25, "bronzepoop");
-		    });
 		    function cleartop(poops){
 		    	for(var i = 0; i < 20; i++) {
 	        		var tmp = poops.pop();
@@ -143,47 +130,46 @@
 	        		clearInterval(tmp[1]);
 	        	}
 		    }
-		    function addpoop(cost, speed, imgsource, classname, dropping, drval, drpclassname) {
-		        if (nextpoop < cost) {
+		    function addpoop(pooper) {
+		        if (nextpoop < Math.round(pooper.cost)) {
 		            return;
 		        }
-		        nextpoop -= cost;
+		        nextpoop -= Math.round(pooper.cost);
+		        pooper.buy();
 		        counter.text(nextpoop);
 		        var v = {
 		            img: $("<img>", {
-		                src: imgsource,
-		                class: classname
+		                src: pooper.img,
+		                class: "poopet"
 		            }).appendTo(div),
-		            val: drval,
-		            drpimg: dropping,
-		            drpclass: drpclassname,
+		            dropping: pooper.dropping,
 		            currx: Math.random() * w + 5,
-		            curry: Math.random() * h + 5,
-		            finalx: 10,
-		            finaly: 10,
-		            incx: 1,
-		            incy: 1,
-		            speed: speed
+		            curry: Math.random() * h + 5
 		        };
+		        v.img.css({ transition: '0s'});
 		        v.img.animate({
 		        	left: v.currx,
 		        	top: v.curry
-		        }, 1000, "linear");
+		        }, 950/pooper.speed, "linear", function() { 
+		        	v.img.css({
+		        		transition: 'all '+1/pooper.speed+'s linear'
+		        	});
+		        });
 		        return [v.img, setInterval(function() {
 		            movepoop(v);
-		        }, 1000)];
+		        }, 1000/pooper.speed)];
 		    }
 
 		    function movepoop(v) {
 	            $("<img>", {
-	                src: v.drpimg,
-	                class: v.drpclass
+	                src: v.dropping.img,
+	                class: v.dropping.classname
 	            }).css({
 	                top: v.curry + 18,
 	                left: v.currx + 21
 	            }).click(function() {
 	                $(this).remove();
-	                nextpoop += v.val;
+	                nextpoop += v.dropping.value;
 	                counter.text(nextpoop);
 	            }).appendTo(div);
 	            v.currx = Math.random() * w + 5;
