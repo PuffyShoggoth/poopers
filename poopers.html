@@ -67,8 +67,6 @@
 		    	this.label = $(text);
 		    }
         	Icon.prototype.buy = function() {
-		    	this.cost = this.cost*1.2;
-		    	this.label.text(Math.round(this.cost));
 		    }
 		    function Paper(id, cost, img, text, val, classname) {
 		    	Icon.call(this, id, cost, img, text);
@@ -82,8 +80,6 @@
 
 		    Paper.prototype = Object.create(Icon.prototype); 
 		    Paper.prototype.buy = function(poops) {
-		    	this.cost = Math.max(this.cost, 0.2*poops);
-		    	this.label.text(Math.round(this.cost));
 		    }
 		    function Dropping(sourceimg, value, classname) {
         		this.img = sourceimg;
