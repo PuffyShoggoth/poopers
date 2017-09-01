@@ -98,10 +98,11 @@
         	Baseturd.prototype = Object.create(Icon.prototype);
         	var startimg = new Baseturd("#baseturd", 10, "cutepoop.png", "#basecounter", 1, "tinypoop.png", 1, "poop");
         	var fastimg = new Baseturd("#fastturd", 30, "cutepoopfast.png", "#fastcounter", 2, "tinypoop.png", 1, "poop");
-        	var goldimg = new Baseturd("#goldturd", 250, "cutepoopgold.png", "#goldcounter", 1, "tinypoopgold.png", 25, "bronzepoop");
-        	var platinumimg = new Baseturd("#platinumturd", 1000, "cutepoopplatinum.png", "#platinumcounter", 3, "tinypoopplatinum.png", 25, "bronzepoop");
+        	var goldimg = new Baseturd("#goldturd", 250, "cutepoopgold.png", "#goldcounter", 1, "tinypoopgold.png", 10, "bronzepoop");
+        	var platinumimg = new Baseturd("#platinumturd", 1000, "cutepoopplatinum.png", "#platinumcounter", 3, "tinypoopplatinum.png", 10, "bronzepoop");
         	var paperimg = new Paper("#paper", 15, "paper.png", "#papercounter", 1, ".poop");
-        	var bronzetpimg = new Paper("#bpaper", 300, "bronzepaper.png", "#bronzepapercounter", 25, ".bronzepoop");
+        	var bronzetpimg = new Paper("#bpaper", 300, "bronzepaper.png", "#bronzepapercounter", 10, ".bronzepoop");
+        	var flushnoise = new Audio("flush.mp3");
 		    function usepaper(paper) {
 		    	if (nextpoop < Math.round(paper.cost)) {
 		            return;
