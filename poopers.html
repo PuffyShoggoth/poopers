@@ -59,6 +59,7 @@
 		    var counter = $("#counter");
 		    var h = 524;
 		    var nextpoop = 10;
+		    var onscreen = 0;
 		    function Icon(id, cost, img, text) {
 		    	this.id = $(id);
 		    	this.cost = cost;
@@ -78,7 +79,12 @@
 		    		usepaper(that);
 		    	});
 		    }
+
 		    Paper.prototype = Object.create(Icon.prototype); 
+		    Paper.prototype.buy = function(poops) {
+		    	this.cost = Math.max(this.cost, 0.2*poops);
+		    	this.label.text(Math.round(this.cost));
+		    }
 		    function Dropping(sourceimg, value, classname) {
         		this.img = sourceimg;
         		this.value = value;
@@ -106,7 +112,7 @@
 		        }
 		        nextpoop -= Math.round(paper.cost);
 		        counter.text(nextpoop);
-		        paper.buy();
+		        var ttpoop = 0;
 		        var v = $("<img>", {
 		            src: paper.img,
 		            class: "tpaper"
@@ -118,8 +124,11 @@
 		            $(this).remove();
 		            div.children(paper.classname).each(function() {
 		                $(this).remove();
-	                    nextpoop += paper.val;
+	                    ttpoop += paper.val;
+	                    onscreen -= 1;
 		            });
+		            nextpoop += ttpoop;
+		            paper.buy(ttpoop);
 		            counter.text(nextpoop);
 		        });
 		    }
